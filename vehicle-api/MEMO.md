@@ -63,3 +63,25 @@ Tip: Learn more about a specific builder with:
 
 `--bom` をつけると依存ライブラリなどもわかる。
 jre, jvmkill, memory-calculatorなどが入る
+
+## reabse
+
+`pack rebase docker.io/library/vehicle-api:0.0.1-SNAPSHOT` するとrebaseできる（base imageの更新などが可能）
+
+base imageを差し替える場合はrun.Dockerfileを用意して以下を実行する
+
+```sh
+docker build . -t run-image -f run.Dockerfile
+pack rebase docker.io/library/vehicle-api:0.0.1-SNAPSHOT --run-image run-image
+
+## こちらでも良い
+./mvnw spring-boot:build-image \
+ -Dmaven.test.skip=true \
+ -Dspring-boot.build-image.runImage=run-image \
+ -Dspring-boot.build-image.pullPolicy=NEVER ## remoteにイメージがない場合、この行を入れる
+
+## imagemagickが入ったコンテナになった
+docker run --entrypoint bash --rm docker.io/library/vehicle-api:0.0.1-SNAPSHOT -c 'convert --version'
+```
+
+基本的には対象のライブラリを追加するBuildpackを作成するほうがメンテナンスしやすいので自分でrun imageを作って更新し続けるのはさけた方が良い。
