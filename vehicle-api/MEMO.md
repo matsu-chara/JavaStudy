@@ -59,3 +59,7 @@ Tip: Learn more about a specific builder with:
 	pack builder inspect <builder-image>
 ```
 
+`pack inspect docker.io/library/vehicle-api:0.0.1-SNAPSHOT` するとどのbuildpackで作られたか調べられる
+
+`--bom` をつけると依存ライブラリなどもわかる。
+jre, jvmkill, memory-calculatorなどが入る
