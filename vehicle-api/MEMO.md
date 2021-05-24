@@ -85,3 +85,81 @@ docker run --entrypoint bash --rm docker.io/library/vehicle-api:0.0.1-SNAPSHOT -
 ```
 
 基本的には対象のライブラリを追加するBuildpackを作成するほうがメンテナンスしやすいので自分でrun imageを作って更新し続けるのはさけた方が良い。
+
+## buildpackの設定
+
+java 16を使いたい場合はBP_JVM_VERSIONを指定
+```
+pack build vehicle-api:16 \
+--builder paketobuildpacks/builder:base \
+--env BP_JVM_VERSION=16
+```
+
+maven-pluginならpom.xmlを書き換え
+
+```
+<plugin>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-maven-plugin</artifactId>
+  <configuration>
+     <image>
+        <env>
+           <BP_JVM_VERSION>16</BP_JVM_VERSION>
+        </env>
+     </image>
+  </configuration>
+</plugin>
+```
+### Memory Calculator
+
+自動でメモリーが計算される
+
+- Heap = Container Memory - Non Heap - Headroom
+    - Headroom: コンテナ内でJava以外に使用されるメモリ(デフォルト 0)
+- Non Heap = Metaspace + Reserved CodeCache + Direct Memory + Tread Stack
+    - Reserved CodeCache=240MB
+    - Direct Memory=10MB
+    - Thread Stack=1MB * スレッド数
+    - スレッド数=250 (Servletアプリの場合) or 50 (Spring WebFluxの場合)
+    - Metaspace = ロードされるクラス数 (jarに含まれるクラスの* 0.35で推定)
+
+アプリケーションを実行すると以下のような表示が出る
+```
+Calculated JVM Memory Configuration: -XX:MaxDirectMemorySize=10M -Xmx449112K -XX:MaxMetaspaceSize=87463K -XX:ReservedCodeCacheSize=240M -Xss1M (Total Memory: 1G, Thread Count: 250, Loaded Class Count: 13028, Headroom: 0%)
+```
+
+## debug
+
+Paketo Debug Buildpackを使うとIDEでデバッグできる
+
+```
+pack build vehicle-api \
+ --builder paketobuildpacks/builder:base \
+ --env BP_DEBUG_ENABLED=true
+docker run --rm \
+ -p 8080:8080 \
+ -p 8000:8000 \
+ -m 1g \
+ -e BPL_DEBUG_ENABLED=true \
+ -e BPL_DEBUG_PORT="*:8000" \
+ -e SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/vehicle \
+ vehicle-api 
+ ```
+
+## jmx
+
+以下でjconsoleでlocalhost:5000でアクセスできるようになる
+
+```
+pack build vehicle-api \
+ --builder paketobuildpacks/builder:base \
+ --env BP_JMX_ENABLED=true
+
+docker run --rm \
+ -p 8080:8080 \
+ -p 5000:5000 \
+ -m 1g \
+ -e BPL_JMX_ENABLED=true \
+ -e SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/vehicle \
+ vehicle-api
+```
