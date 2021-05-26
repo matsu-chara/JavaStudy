@@ -163,3 +163,19 @@ docker run --rm \
  -e SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/vehicle \
  vehicle-api
 ```
+
+## binding
+
+bindingという仕組みに準拠したファイルを設置し Spring Cloud Bindingsというライブラリを通すとspringがアクセスできるようなpropertyファイルにしてくれる。
+
+以下のようにマウントしたあと SERVICE_BINDING_ROOT を設定する
+```sh
+docker run --rm \
+ -p 8080:8080 \
+ -m 1g \
+ -e SERVICE_BINDING_ROOT=/bindings \
+ -e MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE="*" \
+ -v ${PWD}/bindings:/bindings \
+ docker.io/library/vehicle-api:0.0.1-SNAPSHOT
+```
+
