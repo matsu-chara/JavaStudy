@@ -179,3 +179,45 @@ docker run --rm \
  docker.io/library/vehicle-api:0.0.1-SNAPSHOT
 ```
 
+certsをgenerate-certs.shで生成し、 TLS対応のposgresを起動する
+
+```
+docker run --rm \
+ -v ${PWD}/certs:/certs \
+ paketobuildpacks/run:base-cnb \
+ sh /certs/generate-certs.sh
+
+docker run --rm \
+-p 5432:5432 \
+-e POSTGRES_DB=vehicle \
+-e POSTGRES_USER=vehicle \
+-e POSTGRES_PASSWORD=vehicle \
+-e POSTGRESQL_ENABLE_TLS=yes \
+-e POSTGRESQL_TLS_CERT_FILE=/certs/server.crt \
+-e POSTGRESQL_TLS_KEY_FILE=/certs/server.key \
+-e POSTGRESQL_TLS_CA_FILE=/certs/root.crt \
+-e POSTGRESQL_PGHBA_REMOVE_FILTERS=hostssl \
+-v ${PWD}/certs:/certs \
+bitnami/postgresql:11.11.0-debian-10-r59
+```
+
+```
+## 自己署名の証明書が信頼されてないのでエラーになる
+docker run --rm \
+ -p 8080:8080 \
+ -m 1g \
+ -e SPRING_DATASOURCE_HIKARI_DATASOURCEPROPERTIES_SSLMODE=verify-full \
+ -e SPRING_DATASOURCE_HIKARI_DATASOURCEPROPERTIES_SSLFACTORY=org.postgresql.ssl.DefaultJavaSSLFactory \
+ -e SERVICE_BINDING_ROOT=/bindings \
+ -v ${PWD}/bindings:/bindings \
+ docker.io/library/vehicle-api:0.0.1-SNAPSHOT
+
+## bindingを生成してから再実行すると通る
+echo ca-certificates > bindings/trusted-certs/type
+cp certs/root.crt bindings/trusted-certs/
+```
+
+環境変数SSL_CERT_DIRに追加したいCA証明書のディレクトリを指定すると、そのディレクトリ内の証明書が起動時にJavaのTruststoreに追加される。
+Buildpackはtypeがca-certificatesなBindingがある場合に、その値を環境変数SSL_CERT_DIRに追加してくれる。
+
+bindingsの中にファイルを入れておけばコンテナ起動するときにtypeごとに環境変数を追加する必要はない。（勝手に環境変数周りを変更してくれる）
