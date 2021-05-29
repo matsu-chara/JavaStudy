@@ -221,3 +221,17 @@ cp certs/root.crt bindings/trusted-certs/
 Buildpackはtypeがca-certificatesなBindingがある場合に、その値を環境変数SSL_CERT_DIRに追加してくれる。
 
 bindingsの中にファイルを入れておけばコンテナ起動するときにtypeごとに環境変数を追加する必要はない。（勝手に環境変数周りを変更してくれる）
+
+## 別のbuildpack
+
+以下のようにbuildpackを指定することで別のjreを使ったりできる
+
+```
+pack build vehicle-api:adopt-openjdk \
+ --builder paketobuildpacks/builder:base \
+ --buildpack paketo-buildpacks/ca-certificates \
+ --buildpack paketo-buildpacks/adopt-openjdk \
+ --buildpack paketo-buildpacks/maven \
+ --buildpack paketo-buildpacks/executable-jar \
+ --buildpack paketo-buildpacks/spring-boot
+ ```
