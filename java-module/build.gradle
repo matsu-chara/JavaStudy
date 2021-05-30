@@ -1,0 +1,18 @@
+subprojects {
+    group 'org.gradle.sample'
+    version = '1.0-SNAPHOT'
+
+    repositories {
+        mavenCentral()
+    }
+
+    plugins.withType(JavaPlugin).configureEach {
+        java {
+            modularity.inferModulePath = true
+        }
+    }
+
+    tasks.withType(Test).configureEach {
+        useJUnitPlatform()
+    }
+}
