@@ -43,3 +43,17 @@ https://koduki.github.io/docs/book-introduction-of-jfr/site/01/02-other_tools.ht
   - heap dumpを取得する
   - ヒープサマリー、ヒストグラム、統計情報などがみられる
   - fullGC注意
+
+### JFR環境
+
+![img_1.png](img_1.png)
+
+今はもう少し進んでいて例えばcorreto8で使えたりしそう
+https://twitter.com/matsu_chara/status/1400418684477218821
+
+### JMC
+
+downloadは https://github.com/corretto/corretto-jmc/releases などdistributorがビルドした物を使うとよい
+
+基本どのdistributorのものも同じものなので、correto以外のJMCをcorretoで使ったり、逆なども普通に動く（らしい）
+
