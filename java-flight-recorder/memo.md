@@ -57,3 +57,11 @@ downloadは https://github.com/corretto/corretto-jmc/releases などdistributor�
 
 基本どのdistributorのものも同じものなので、correto以外のJMCをcorretoで使ったり、逆なども普通に動く（らしい）
 
+JMCではJFRだけではなく、JMXでリアルタイムの値を取得する事も可能(Mbeanサーバーというのをダブルクリックする)
+※ Mbeanはmanaged beanの略で管理されるbeanのことらしい（よくわからない）
+
+JFRファイルの取得・表示も可能（本番ではJMCでのJFRファイルの取得はしないはず）
+
+取得すると非推奨なフラグなども自動解析してくれる
+
+![img_2.png](img_2.png)
