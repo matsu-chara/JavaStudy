@@ -65,3 +65,22 @@ JFRファイルの取得・表示も可能（本番ではJMCでのJFRファイ�
 取得すると非推奨なフラグなども自動解析してくれる
 
 ![img_2.png](img_2.png)
+
+### JFR取得
+
+取得方法は以下
+
+- GUI(JMC/VisualVM)
+  - 本番ではやらない
+- CLI
+  - jcmd
+    - `jcmd 1234 JFR.start duration=1m filename=myrecording.jfr`
+    - `jcmd 1234 JFR.dump filename=myrecording.jfr`
+- JVMオプション
+  - jdk8
+    - `-XX:+UnlockCommercialFeatures -XX:+FlightRecorder -XX:FlightRecorderOptions=defaultrecording=true, dumponexit=true, dumponexitpath=/var/log/myapp/myapp.jfr`
+  - jdk11
+    - `-XX:StartFlightRecording=dumponexit=true, filename=/var/log/myapp/myapp.jfr`
+
+- プログラム
+
