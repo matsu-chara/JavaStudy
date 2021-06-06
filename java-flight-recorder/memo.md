@@ -84,3 +84,12 @@ JFRファイルの取得・表示も可能（本番ではJMCでのJFRファイ�
 
 - プログラム
 
+### JFR event
+
+- jdk.jfrがある
+  - https://docs.oracle.com/javase/jp/14/jfapi/preface.html#GUID-4846A6CB-D1E9-44C2-A8D1-C7B6551CC9D9
+
+## 参考
+
+- https://matsumana.info/blog/2018/10/16/jdk11-flight-recorder/
+- https://www.youtube.com/watch?v=sGRT1ULc-PY
